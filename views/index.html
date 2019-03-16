@@ -18,7 +18,7 @@
     <div class="side_bar">
         <div class="user_info">
             <img src="/static/img/person.png" alt="张大山">
-            <p>欢迎你 <em>李雷</em></p>
+            <p>欢迎你 <em>zhangsan</em></p>
         </div>
 
         <div class="menu_con">
@@ -53,17 +53,18 @@
                     <th width="7%">编辑</th>
                     <th width="10%">文章类型</th>
                 </tr>
-                
 
+            {{range .articles}}
                 <tr>
-                    <td>{{.Aname}}</td>
-                    <td><a href="#">查看详情</a></td>
-                    <td> 2006-7-02 15:04:05</td>
-                    <td>3</td>
+                    <td>{{.ArtiName}}</td>
+                    <td><a href="/content?id={{.Id}}">查看详情</a></td>
+                    <td>{{.Atime.Format "2006-01-02 15:04:05"}}</td>
+                    <td>{{.Acount}}</td>
                     <td><a href="#" class="dels">删除</a></td>
-                    <td><a href="#">编辑</a></td>
+                    <td><a href="/update?id={{.Id}}">编辑</a></td>
                     <td>财经新闻</td>
                 </tr>
+                {{end}}
             </table>
 
             <ul class="pagenation">
