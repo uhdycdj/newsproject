@@ -19,6 +19,14 @@ func (c *MainController) Get() {
 }
 
 func (c *MainController) ShowAdd() {
+	newOrm := orm.NewOrm()
+	var articleType []models.ArticleType
+	_, err := newOrm.QueryTable("ArticleType").All(&articleType)
+	if err != nil {
+		beego.Info("获取类型出错")
+		return
+	}
+	c.Data["articleType"] = articleType
 	c.TplName = "add.html"
 }
 
@@ -168,7 +176,7 @@ func (c *MainController) AddArticle() {
 			c.Redirect("/addArticle", 302)
 		}
 		//c.Ctx.WriteString("添加文章成功!")
-		c.Redirect("/index",302)
+		c.Redirect("/index", 302)
 	} else {
 		defer file.Close()
 		ext := path.Ext(header.Filename)
@@ -207,7 +215,7 @@ func (c *MainController) AddArticle() {
 			c.Redirect("/addArticle", 302)
 		}
 		//c.Ctx.WriteString("添加文章成功!")
-		c.Redirect("/index",302)
+		c.Redirect("/index", 302)
 	}
 
 }

@@ -12,8 +12,15 @@ type ShowListController struct {
 }
 
 func (s *ShowListController) ShowList() {
+	id, _ := s.GetInt("select")
 	newOrm := orm.NewOrm()
 	var articles []models.Article
+	var artiTypes []models.ArticleType
+	_, err := newOrm.QueryTable("ArticleType").All(&artiTypes)
+	if err!=nil{
+		beego.Info("获取类型错误")
+		return
+	}
 	count, e := newOrm.QueryTable("Article").Count()
 	if e != nil {
 		beego.Info("查询出错")
@@ -27,7 +34,7 @@ func (s *ShowListController) ShowList() {
 		pageIndex = 1
 	}
 	start := pageSize * (pageIndex - 1)
-	newOrm.QueryTable("Article").Limit(pageSize, start).All(&articles)
+	newOrm.QueryTable("Article").Limit(pageSize, start).Filter("ArticleType__Id",id).All(&articles)
 
 	FirstPage := false
 	if pageIndex == 1 {
@@ -39,10 +46,12 @@ func (s *ShowListController) ShowList() {
 	}
 
 	s.Data["pageCount"] = pageCount
+	s.Data["articleType"] = artiTypes
 	s.Data["FirstPage"] = FirstPage
 	s.Data["LastPage"] = LastPage
 	s.Data["articles"] = articles
 	s.Data["pageIndex"] = pageIndex
 	s.Data["count"] = count
+	s.Data["typeid"] = id
 	s.TplName = "index.html"
 }

@@ -9,7 +9,13 @@ import (
 func main() {
 	beego.AddFuncMap("showprepage", prepage)
 	beego.AddFuncMap("shownextpage", nextpage)
+	beego.AddFuncMap("addone", showNewAddOne)
 	beego.Run()
+}
+
+func showNewAddOne(num int) (newNum int) {
+	newNum = num + 1
+	return
 }
 
 /*
