@@ -12,6 +12,11 @@ type ShowListController struct {
 }
 
 func (s *ShowListController) ShowList() {
+	session := s.GetSession("userName")
+	if session==nil{
+		s.Redirect("/login",302)
+		return
+	}
 	id, _ := s.GetInt("select")
 	newOrm := orm.NewOrm()
 	var articles []models.Article
@@ -21,7 +26,12 @@ func (s *ShowListController) ShowList() {
 		beego.Info("获取类型错误")
 		return
 	}
-	count, e := newOrm.QueryTable("Article").Count()
+	var count int64
+	//count, e := newOrm.QueryTable("Article").Count()
+	count, e := newOrm.QueryTable("Article").RelatedSel("ArticleType").Count()
+	if id!=0{
+		count,e=newOrm.QueryTable("Article").RelatedSel("ArticleType").Filter("ArticleType__Id",id).Count()
+	}
 	if e != nil {
 		beego.Info("查询出错")
 		return
@@ -34,8 +44,11 @@ func (s *ShowListController) ShowList() {
 		pageIndex = 1
 	}
 	start := pageSize * (pageIndex - 1)
-	newOrm.QueryTable("Article").Limit(pageSize, start).Filter("ArticleType__Id",id).All(&articles)
-
+	if id==0{
+		newOrm.QueryTable("Article").Limit(pageSize, start).RelatedSel("ArticleType").All(&articles)
+	}else {
+		newOrm.QueryTable("Article").Limit(pageSize, start).RelatedSel("ArticleType").Filter("ArticleType__Id",id).All(&articles)
+	}
 	FirstPage := false
 	if pageIndex == 1 {
 		FirstPage = true
@@ -45,6 +58,10 @@ func (s *ShowListController) ShowList() {
 		LastPage = true
 	}
 
+	s.LayoutSections = make(map[string]string)
+	s.LayoutSections["contentHead"] = "head.html"
+	s.Data["user"] = session
+	s.Layout="layout.html"
 	s.Data["pageCount"] = pageCount
 	s.Data["articleType"] = artiTypes
 	s.Data["FirstPage"] = FirstPage

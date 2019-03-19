@@ -11,12 +11,15 @@ type TypeController struct {
 }
 
 func (t *TypeController) ShowAddType() {
+	session := t.GetSession("userName")
 	newOrm := orm.NewOrm()
 	var artiTypes []models.ArticleType
 	_, err := newOrm.QueryTable("ArticleType").All(&artiTypes)
 	if err != nil {
 		beego.Info("没有获取到类型数据")
 	}
+	t.Data["user"] = session
+	t.Layout="layout.html"
 	t.Data["articleType"] = artiTypes
 	t.TplName = "addType.html"
 }
@@ -26,7 +29,7 @@ func (t *TypeController) HandleAddType() {
 	if tname == "" {
 		beego.Info("获取类型信息为空")
 		//没有输入类型名称，返回到添加页面
-		t.Redirect("/addType", 302)
+		t.Redirect("/article/addType", 302)
 		return
 	}
 	newOrm := orm.NewOrm()
@@ -37,5 +40,5 @@ func (t *TypeController) HandleAddType() {
 		beego.Info("插入数据失败")
 		return
 	}
-	t.Redirect("/addType", 302)
+	t.Redirect("/article/addType", 302)
 }

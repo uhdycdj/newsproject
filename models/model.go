@@ -10,6 +10,7 @@ type User struct {
 	Id   int
 	Name string
 	Pwd  string
+	Article []*Article `orm:"rel(m2m)"`
 }
 
 type ArticleType struct {
@@ -26,6 +27,7 @@ type Article struct {
 	Acontent    string
 	Aimg        string
 	ArticleType *ArticleType `orm:"rel(fk)"`
+	User []*User `orm:"reverse(many)"`
 }
 
 func init() {
